@@ -11,10 +11,11 @@ def reorder(input_pdf, output_pdf):
     num_pages = len(reader.pages)
     
     # Ensure the number of pages is a multiple of 4
-    num_blank_pages = 4 - (num_pages % 4)
-    num_pages_w_blanks = num_pages + num_blank_pages
+    if num_pages % 4 != 0:
+        print("Please provide a PDF file with page count that is a multiple of 4.")
+        sys.exit(1)
 
-    saddle_order = flat_map(lambda i: [i + 1,num_pages_w_blanks - i] if i%2!=0 else [num_pages_w_blanks - i,i + 1], range(num_pages_w_blanks // 2))
+    saddle_order = flat_map(lambda i: [i + 1,num_pages - i] if i%2!=0 else [num_pages - i,i + 1], range(num_pages // 2))
     print("saddle_order",saddle_order)
 
     impose_order = flat_map(lambda i: saddle_order[-4*(i+1):-4*i] if i>0 else saddle_order[-4:], range(len(saddle_order)//4))
@@ -23,11 +24,8 @@ def reorder(input_pdf, output_pdf):
     # Create a new PDF for the imposed pages
     writer = PyPDF2.PdfWriter()
     for page_num in impose_order:
-        if page_num <= num_pages:
             page = reader.pages[page_num - 1]
             writer.add_page(page)
-        else:
-            writer.add_blank_page()  # Add blank pages if needed
     
     with open(output_pdf, "wb") as f_out:
         writer.write(f_out)
