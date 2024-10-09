@@ -1,4 +1,5 @@
 import sys
+import time
 import PyPDF2
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
@@ -13,6 +14,7 @@ def reorder(input_pdf, output_pdf):
     # Ensure the number of pages is a multiple of 4
     if num_pages % 4 != 0:
         print("Please provide a PDF file with page count that is a multiple of 4.")
+        time.sleep(5)
         sys.exit(1)
 
     saddle_order = flat_map(lambda i: [i + 1,num_pages - i] if i%2!=0 else [num_pages - i,i + 1], range(num_pages // 2))
@@ -34,11 +36,13 @@ if __name__ == "__main__":
     # Check if the user provided a file path
     if len(sys.argv) < 2:
         print("Please provide the path to a PDF file.")
+        time.sleep(5)
         sys.exit(1)
 
     # Take the first argument as the input file
     input_pdf_path = sys.argv[1]
-    output_pdf_path = input_pdf_path[:-4] + " (Booklet Maker Order).pdf"
+    output_pdf_path = input_pdf_path[:-4] + " (re-ordered pages).pdf"
 
     # Call the reorder function
     reorder(input_pdf_path, output_pdf_path)
+
